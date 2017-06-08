@@ -1,0 +1,105 @@
+#body {
+  top: 40%;
+  left: 25%;
+  width: 37%;
+  height: 25%;
+  position: fixed;
+  
+  background-color: rgba(122, 151, 103, 0.5);
+  box-shadow: 0 2px 6px 0 rgba(0,0,0,0.2);
+  border-radius: 3px;
+  z-index: 55
+}
+* {
+  box-sizing: border-box;
+}
+#help {
+  width: 0;
+  height: 0;
+  display: none;
+  transition: 5s all;
+}
+.help-shown {
+  width:100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  z-index: 5;
+  display: inline-block;
+  position: fixed;
+}
+#background-image {
+  background-image: url('https://sx.thelmgn.com/2017/06/botstion.png');
+  background-size: cover;
+  display: block;
+  filter: blur(30px);
+  -webkit-filter: blur(30px);
+  height: 150%;
+  top: -25%;
+  left: -25%;
+  width: 150%;
+  background-position: center;
+  position: fixed;
+  right: 0;
+  z-index: 1;
+}
+
+.content {
+  background: rgba(255, 255, 255, 0.35);
+  border-radius: 3px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
+  font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+  top: 10px;
+  left: 0;
+  position: fixed;
+  margin-left: 20px;
+  margin-right: 20px;
+  right: 0;
+  z-index: -2;
+  padding: 0 10px;
+}
+body {
+  background-color: #443f46;
+  color: #ebd9b3;
+  font-family: 'Open Sans';
+}
+a {
+  color: #ebd9b3;
+}
+#links * {
+  padding-left: 3px;
+}
+#page {
+  width: 100vh;
+  height: 100vh;
+  
+}
+#logo {
+  float: left;
+  border-radius: 10px;
+}
+#title {
+  font-size: 300%;
+  line-height: 0px;
+}
+#logo {
+  background-image: url("https://issues.alfresco.com/jira/secure/attachment/36885/1000x1000.png");
+  background-size: cover;
+}
+#credits {
+  font-size: 25%;
+}
+#invite {
+  background-color: #7289DA;
+  border-radius: 3px;
+  border: 0;
+  padding: 0.5%;
+ box-shadow: 0 2px 6px 0 rgba(0,0,0,0.2);
+  left: 20px;
+  color: #ebd9b3;
+}
+#links {
+  position:absolute; 
+  bottom:0;
+  right:32px;
+}

@@ -1,0 +1,12 @@
+.fs {
+  width: 32px;
+  height: 32px;
+  display: inline-block;
+}
+
+.fs-discord {
+  background-image: url("../img/discord.svg");
+  background-size: cover;
+  top: 2px;
+  position: absolute;
+}
