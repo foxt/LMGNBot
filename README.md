@@ -1,3 +1,7 @@
 # Hello!
 
-Welcome to the Botstion project. The master branch only contains builds and this info. Change the branch at the top to view the code for the website or the actual bot.
+Welcome to the LMGNBot3 project. This is the old version of the bot and is no longer supported.
+
+# Notes
+
+Don't try logging in with those tokens, they won't work.
