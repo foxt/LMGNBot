@@ -192,6 +192,209 @@ Public Class CommandHandler
         Public Property results As mcatResult()
         Public Property total As Integer
     End Class
+
+    Public Class owachTank
+        Public Property shot_down As Boolean
+        Public Property halt_state As Boolean
+        Public Property hog_wild As Boolean
+        Public Property i_am_your_shield As Boolean
+        Public Property mine_sweeper As Boolean
+        Public Property power_overwhelming As Boolean
+        Public Property giving_you_the_hook As Boolean
+        Public Property game_over As Boolean
+        Public Property the_power_of_attraction As Boolean
+        Public Property anger_management As Boolean
+        Public Property overclocked As Boolean
+        Public Property storm_earth_and_fire As Boolean
+    End Class
+
+    Public Class owachSupport
+        Public Property enabler As Boolean
+        Public Property supersonic As Boolean
+        Public Property the_floor_is_lava As Boolean
+        Public Property huge_rez As Boolean
+        Public Property the_iris_embraces_you As Boolean
+        Public Property rapid_discord As Boolean
+        Public Property the_car_wash As Boolean
+        Public Property huge_success As Boolean
+        Public Property group_health_plan As Boolean
+        Public Property naptime As Boolean
+    End Class
+
+    Public Class owachMaps
+        Public Property escort_duty As Boolean
+        Public Property shutout As Boolean
+        Public Property world_traveler As Boolean
+        Public Property lockdown As Boolean
+        Public Property cant_touch_this As Boolean
+        Public Property double_cap As Boolean
+    End Class
+
+    Public Class owachSpecial
+        Public Property cleanup_duty As Boolean
+        Public Property survived_the_night As Boolean
+        Public Property snowed_in As Boolean
+        Public Property ambush As Boolean
+        Public Property held_the_door As Boolean
+        Public Property whap As Boolean
+        Public Property cool_as_ice As Boolean
+        Public Property flagbearer As Boolean
+        Public Property not_a_scratch As Boolean
+        Public Property four_they_were As Boolean
+    End Class
+
+    Public Class owachDefense
+        Public Property did_that_sting As Boolean
+        Public Property armor_up As Boolean
+        Public Property ice_blocked As Boolean
+        Public Property cold_snap As Boolean
+        Public Property mine_like_a_steel_trap As Boolean
+        Public Property roadkill As Boolean
+        Public Property simple_geometry As Boolean
+        Public Property raid_wipe As Boolean
+        Public Property charge As Boolean
+        Public Property the_dragon_is_sated As Boolean
+        Public Property smooth_as_silk As Boolean
+        Public Property triple_threat As Boolean
+    End Class
+
+    Public Class owachGeneral
+        Public Property level_25 As Boolean
+        Public Property decorated As Boolean
+        Public Property the_path_is_closed As Boolean
+        Public Property level_50 As Boolean
+        Public Property survival_expert As Boolean
+        Public Property blackjack As Boolean
+        Public Property centenary As Boolean
+        Public Property undying As Boolean
+        Public Property level_10 As Boolean
+        Public Property the_friend_zone As Boolean
+        Public Property decked_out As Boolean
+    End Class
+
+    Public Class owachOffense
+        Public Property whoa_there As Boolean
+        Public Property special_delivery As Boolean
+        Public Property rocket_man As Boolean
+        Public Property their_own_worst_enemy As Boolean
+        Public Property clearing_the_area As Boolean
+        Public Property waste_not_want_not As Boolean
+        Public Property power_outage As Boolean
+        Public Property total_recall As Boolean
+        Public Property hack_the_planet As Boolean
+        Public Property death_from_above As Boolean
+        Public Property die_die_die_die As Boolean
+        Public Property target_rich_environment As Boolean
+        Public Property slice_and_dice As Boolean
+        Public Property its_high_noon As Boolean
+    End Class
+
+    Public Class owachivements
+        Public Property tank As owachTank
+        Public Property support As owachSupport
+        Public Property maps As owachMaps
+        Public Property special As owachSpecial
+        Public Property defense As owachDefense
+        Public Property general As owachGeneral
+        Public Property offense As owachOffense
+    End Class
+
+    Public Class OWQPAverageStats
+        Public Property objective_kills_avg As Double
+        Public Property deaths_avg As Double
+        Public Property healing_done_avg As Double
+        Public Property objective_time_avg As Double
+        Public Property time_spent_on_fire_avg As Double
+        Public Property final_blows_avg As Double
+        Public Property solo_kills_avg As Double
+        Public Property damage_done_avg As Double
+        Public Property melee_final_blows_avg As Double
+        Public Property eliminations_avg As Double
+    End Class
+
+    Public Class OWQPOverallStats
+        Public Property comprank As Integer
+        Public Property avatar As String
+        Public Property wins As Integer
+        Public Property rank_image As String
+        Public Property tier As String
+        Public Property win_rate As Double
+        Public Property prestige As Integer
+        Public Property level As Integer
+        Public Property losses As Integer
+        Public Property games As Integer
+    End Class
+
+    Public Class OWQPGameStats
+        Public Property shield_generator_destroyed_most_in_game As Double
+        Public Property eliminations_most_in_game As Double
+        Public Property environmental_kills As Double
+        Public Property recon_assists_most_in_game As Double
+        Public Property objective_kills As Double
+        Public Property objective_time As Double
+        Public Property kill_streak_best As Double
+        Public Property objective_time_most_in_game As Double
+        Public Property turrets_destroyed As Double
+        Public Property final_blows As Double
+        Public Property offensive_assists As Double
+        Public Property defensive_assists As Double
+        Public Property defensive_assists_most_in_game As Double
+        Public Property environmental_deaths As Double
+        Public Property medals_gold As Double
+        Public Property recon_assists As Double
+        Public Property games_won As Double
+        Public Property medals_silver As Double
+        Public Property eliminations As Double
+        Public Property turrets_destroyed_most_in_game As Double
+        Public Property teleporter_pads_destroyed As Double
+        Public Property kpd As Double
+        Public Property multikills As Double
+        Public Property teleporter_pad_destroyed_most_in_game As Double
+        Public Property solo_kills_most_in_game As Double
+        Public Property offensive_assists_most_in_game As Double
+        Public Property final_blows_most_in_game As Double
+        Public Property medals As Double
+        Public Property time_spent_on_fire As Double
+        Public Property solo_kills As Double
+        Public Property melee_final_blows_most_in_game As Double
+        Public Property melee_final_blows As Double
+        Public Property environmental_kills_most_in_game As Double
+        Public Property multikill_best As Double
+        Public Property damage_done As Double
+        Public Property objective_kills_most_in_game As Double
+        Public Property cards As Double
+        Public Property healing_done_most_in_game As Double
+        Public Property time_spent_on_fire_most_in_game As Double
+        Public Property healing_done As Double
+        Public Property medals_bronze As Double
+        Public Property shield_generators_destroyed As Double
+        Public Property damage_done_most_in_game As Double
+        Public Property deaths As Double
+        Public Property time_played As Double
+    End Class
+
+    Public Class OWquickplay
+        Public Property average_stats As OWQPAverageStats
+        Public Property competitive As Boolean
+        Public Property overall_stats As OWQPOverallStats
+        Public Property game_stats As OWQPGameStats
+    End Class
+    Public Class OWStatss
+        Public Property competitive As Object ' Will intregrate Soon™
+        Public Property quickplay As OWQuickplay
+    End Class
+    Public Class OWstats
+        Public Property achievements As owachivements
+        Public Property stats As OWStatss
+        Public Property heroes As OWHeroes
+    End Class
+    Public Class OWAPIResponse
+        Public Property eu As OWstats
+        Public Property any As OWstats
+        Public Property us As OWstats
+        Public Property kr As OWstats
+        Public Property _request As Object
+    End Class
 #End Region
 #Region "Message Handlers"
     Async Function hC(ByVal msg As IUserMessage) As Task Handles client.MessageReceived
