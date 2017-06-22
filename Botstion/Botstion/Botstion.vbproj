@@ -109,6 +109,7 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="OWAPIClasses.vb" />
     <Compile Include="CommandHandler.vb" />
     <Compile Include="Module1.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
@@ -146,10 +147,16 @@
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
     <None Include="App.config" />
+    <None Include="OWAPIOutput.json" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="bin\Debug\token.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties OWAPIOutput_1json__JSONSchema="http://jsonapi.org/schema" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>
