@@ -64,3 +64,5 @@ J:\Leo\Documents\GitHub\botstion\Botstion\Botstion\obj\Debug\Botstion.vbproj.Gen
 J:\Leo\Documents\GitHub\botstion\Botstion\Botstion\obj\Debug\Botstion.exe
 J:\Leo\Documents\GitHub\botstion\Botstion\Botstion\obj\Debug\Botstion.xml
 J:\Leo\Documents\GitHub\botstion\Botstion\Botstion\obj\Debug\Botstion.pdb
+J:\Leo\Documents\GitHub\botstion\Botstion\Botstion\bin\Debug\config.default
+J:\Leo\Documents\GitHub\botstion\Botstion\Botstion\bin\Debug\config.json

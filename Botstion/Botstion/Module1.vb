@@ -54,9 +54,17 @@ Module Module1
         Dim commands = New CommandHandler()
         commands.Install(client, name)
     End Function
-
     Async Sub Start()
-        Await createClient(My.Computer.FileSystem.ReadAllText("token.txt"), "Botstion")
+        If Not My.Computer.FileSystem.FileExists("config.json") Then
+            Await Log(New LogMessage(LogSeverity.Info, "Config", "No config. Checking for default config."))
+            If Not My.Computer.FileSystem.FileExists("config.default") Then
+                Await Log(New LogMessage(LogSeverity.Info, "Config", "No default config. Attempting to download from GitHub."))
+                My.Computer.Network.DownloadFile("https://raw.githubusercontent.com/theLMGN/botstion/actualbot/Botstion/Botstion/bin/Debug/config.default", "config.default")
+            End If
+            Await Log(New LogMessage(LogSeverity.Info, "Config", "No config. Attempting to copy from config.default"))
+            My.Computer.FileSystem.CopyFile("config.default", "config.json")
+        End If
+        Await createClient(JsonConvert.DeserializeObject(My.Computer.FileSystem.ReadAllText("config.json")).token, "Botstion")
     End Sub
 
     Function Log(ByVal message As LogMessage) As Task Handles client.Log

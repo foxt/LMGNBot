@@ -1,0 +1,7 @@
+{
+  "token": "https://discordapp.com/developers/applications/me",
+  "googleConfig": {
+    "apikey": "https://console.developers.google.com/apis/credentials",
+    "cx": "https://cse.google.com/cse/create"
+  }
+}
