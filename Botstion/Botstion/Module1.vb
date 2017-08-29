@@ -36,6 +36,16 @@ Module Module1
         drawPixelArt("wwwlllwww    By theLMGN")
         drawPixelArt("wwwwwwwww")
         drawPixelArt("wwwwwwwww")
+        If Environment.Is64BitProcess = False Then
+            Console.ForegroundColor = ConsoleColor.DarkRed
+            Console.Write("! WARNING ! ")
+            Console.ForegroundColor = ConsoleColor.Red
+            Console.Write("We recommend you run Botstion in 64 bit mode. You are not entitled to support if you're running in 32bit mode. The chances of data loss is raised. Please press any key to continue")
+            Console.ForegroundColor = ConsoleColor.DarkRed
+            Console.WriteLine(" ! WARNING !")
+            Console.ForegroundColor = ConsoleColor.Gray
+            Console.ReadKey()
+        End If
         Dim main = New Task(AddressOf Start)
         main.Start()
         While True
@@ -54,6 +64,7 @@ Module Module1
         Dim commands = New CommandHandler()
         commands.Install(client, name)
     End Function
+
     Async Sub Start()
         If Not My.Computer.FileSystem.FileExists("config.json") Then
             Await Log(New LogMessage(LogSeverity.Info, "Config", "No config. Checking for default config."))
@@ -64,7 +75,7 @@ Module Module1
             Await Log(New LogMessage(LogSeverity.Info, "Config", "No config. Attempting to copy from config.default"))
             My.Computer.FileSystem.CopyFile("config.default", "config.json")
         End If
-        Await createClient(JsonConvert.DeserializeObject(My.Computer.FileSystem.ReadAllText("config.json")).token, "Botstion")
+        Await createClient(JsonConvert.DeserializeObject(Of config.config)(My.Computer.FileSystem.ReadAllText("config.json")).token, "Botstion")
     End Sub
 
     Function Log(ByVal message As LogMessage) As Task Handles client.Log

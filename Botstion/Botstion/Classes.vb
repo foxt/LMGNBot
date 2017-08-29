@@ -2679,3 +2679,19 @@
         Public Property api_ver As Integer
     End Class
 End Class
+Public Class config
+
+    Public Class config
+        Public Property token As String
+        Public Property googleConfig As Googleconfig
+    End Class
+
+    Public Class Googleconfig
+        Public Property apikey As String
+        Public Property cx As String
+    End Class
+
+End Class
+Public Class qdb
+    
+End Class

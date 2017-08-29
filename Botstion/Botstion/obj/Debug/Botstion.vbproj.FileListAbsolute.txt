@@ -66,3 +66,5 @@ J:\Leo\Documents\GitHub\botstion\Botstion\Botstion\obj\Debug\Botstion.xml
 J:\Leo\Documents\GitHub\botstion\Botstion\Botstion\obj\Debug\Botstion.pdb
 J:\Leo\Documents\GitHub\botstion\Botstion\Botstion\bin\Debug\config.default
 J:\Leo\Documents\GitHub\botstion\Botstion\Botstion\bin\Debug\config.json
+C:\Users\Leo\Documents\GitHub\botstion\Botstion\Botstion\bin\Debug\config.default
+C:\Users\Leo\Documents\GitHub\botstion\Botstion\Botstion\bin\Debug\config.json
