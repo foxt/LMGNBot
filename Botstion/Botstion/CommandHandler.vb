@@ -7,6 +7,7 @@ Imports Discord.Commands
 Imports Discord.WebSocket
 Imports Newtonsoft.Json
 Imports System.Xml
+Imports StatsdClient
 
 
 Public Class CommandHandler
@@ -39,15 +40,18 @@ Public Class CommandHandler
     Dim name As String
 
     Async Sub Install(ByVal c As DiscordSocketClient, ByVal namee As String)
+        Await Log(New LogMessage(LogSeverity.Info, "Commands", "Loading Commands"))
         client = c
         name = namee
         ' Create the Command Service
         commands = New CommandService()
-        ' Retrieve the Bot User for later use
-        self = client.CurrentUser()
-        Await Log(New LogMessage(LogSeverity.Info, "Commands", "Loaded Successfully"))
+        Await Log(New LogMessage(LogSeverity.Info, "Commands", "Loading Uptime"))
         uptime = DateTime.Now
+        Await Log(New LogMessage(LogSeverity.Info, "Commands", "Loading requests"))
         wc.Headers.Add(HttpRequestHeader.UserAgent, "botstion.tech")
+        Await Log(New LogMessage(LogSeverity.Info, "Commands", "Loading DataDog"))
+        StatsdClient.DogStatsd.Configure(New StatsdConfig With {.Prefix = "Botstion as " & My.User.Name, .StatsdServerName = "127.0.0.1"})
+        Await Log(New LogMessage(LogSeverity.Info, "Commands", "Loaded Successfully"))
     End Sub
 #End Region
 #Region "Configuration"
@@ -105,10 +109,8 @@ Public Class CommandHandler
         Public id As Int64
 
     End Class
-    
-#End Region
 
-    Dim thelmgn
+#End Region
     Dim users = New List(Of User)
     Dim allUsers = New List(Of Int64)
 #Region "Functions"
@@ -118,9 +120,10 @@ Public Class CommandHandler
 #End Region
 #Region "Message Handlers"
     Async Function hC(ByVal msg As IUserMessage) As Task Handles client.MessageReceived
-        thelmgn = (Await client.GetUser(158311402677731328).GetOrCreateDMChannelAsync)
+        DogStatsd.Increment("Messages Seen")
         Try
             If msg.Content.StartsWith("b!") Then
+                DogStatsd.Increment("Commands Seen")
                 If msg.Content.StartsWith("b!mcatlookup ") Then
 #Region "Monstercat"
                     Dim mcatMSG = Await sendMessage(msg.Channel, msg.Author.Mention, False, New EmbedBuilder With {
@@ -365,19 +368,7 @@ Public Class CommandHandler
                     End If
 #End Region
                 ElseIf msg.Content.StartsWith("b!helpdesk") Then
-                    Await sendMessage((client.GetChannel(351080198596329483)), msg.Author.Mention, False, New EmbedBuilder With {
-                                                                                               .Author = New EmbedAuthorBuilder With {
-                                                                                                    .Name = msg.Author.Username & "#" & msg.Author.Discriminator,
-                                                                                                    .Url = (Await TryCast(msg.Channel, IGuildChannel).CreateInviteAsync(1800, 1, True)).Url,
-                                                                                                    .IconUrl = msg.Author.GetAvatarUrl},
-                                                                                               .Footer = New EmbedFooterBuilder With {
-                                                                                                    .IconUrl = "https://sx.thelmgn.com/2017/06/botstion.png",
-                                                                                                    .Text = "Botstion was made by theLMGN with Discord.NET"},
-                                                                                               .Url = "https://botstion.tech",
-                                                                                               .Title = "New help request (uid: " & msg.Author.Id & ")",
-                                                                                               .Timestamp = DateTimeOffset.UtcNow,
-                                                                                               .Color = botstionBlue,
-                                                                                               .Description = msg.Content})
+                    DogStatsd.Event("Help request from " & msg.Author.Username & "#" & msg.Author.Discriminator, msg.Content & Chr(13) & "Invite link: " & (Await TryCast(msg.Channel, IGuildChannel).CreateInviteAsync(1800, 1, True)).Url, "helprequest", "helprequest", "helprequest", DateTime.Now.Ticks, "high", My.User.Name, {"userreported", "helprequest"})
                     Await sendMessage(msg.Channel, msg.Author.Mention, False, New EmbedBuilder With {
                                                                                                .Author = New EmbedAuthorBuilder With {
                                                                                                     .Name = "Help Desk",
@@ -405,7 +396,7 @@ Public Class CommandHandler
                                                                                                .Description = "`" & msg.Content & "`is not a command. Try b!help for a list of 'em!"})
                 End If
             End If
-            If msg.Content = "AAxx" And False Then
+            If msg.Content = "b!authenticate" And TryCast(msg.Channel, IGuildChannel).GuildId = 320950192444669954 Then
                 Await msg.DeleteAsync()
                 Dim thingies = New List(Of EmbedFieldBuilder)
                 thingies.Add((New EmbedFieldBuilder With {.IsInline = True, .Name = "Author", .Value = "<@158311402677731328>"}))
@@ -440,21 +431,10 @@ Public Class CommandHandler
                                                                                                .Title = "An error happened whilst processing your command. ",
                                                                                                .Timestamp = DateTimeOffset.UtcNow,
                                                                                                .Color = botstionBlue,
-                                                                                               .Description = "A " & ex.Message & " error happened whilst running that command. The full technical details has been sent to theLMGN."})
-            sendMessage(thelmgn, msg.Author.Mention, False, New EmbedBuilder With {
-                                                                                               .Author = New EmbedAuthorBuilder With {
-                                                                                                    .Name = msg.Author.Username & "#" & msg.Author.Discriminator,
-                                                                                                    .Url = "https://botstion.tech",
-                                                                                                    .IconUrl = msg.Author.GetAvatarUrl},
-                                                                                               .Footer = New EmbedFooterBuilder With {
-                                                                                                    .IconUrl = "https://sx.thelmgn.com/2017/06/botstion.png",
-                                                                                                    .Text = "Botstion was made by theLMGN with Discord.NET"},
-                                                                                               .Url = "https://botstion.tech",
-                                                                                               .Title = "Exception caught in " & msg.Content & " (uid: " & msg.Author.Id & ")",
-                                                                                               .Timestamp = DateTimeOffset.UtcNow,
-                                                                                               .Color = botstionBlue,
-                                                                                               .Description = ex.ToString})
+                                                                                               .Description = "A " & ex.Message & " error happened whilst running that command. The full technical details has been sent to the Botstion team."})
+            DogStatsd.Event("Unhandled Exception in " & msg.Content & " from " & msg.Author.Username & "#" & msg.Author.Discriminator, msg.ToString, "exception", msg.Content.Trim(" ").First.ToString().Replace("b!", ""), msg.Content.Trim(" ").First.ToString().Replace("b!", ""), DateTime.Now.Ticks, "medium", My.User.Name, {"automatic", "exception", "command", msg.Content.Trim(" ").First.ToString().Replace("b!", "")})
         End Try
+        DogStatsd.Histogram("Response Time", (DateTime.Now - msg.CreatedAt).TotalMilliseconds)
     End Function
 #End Region
 #Region "Handlers"
