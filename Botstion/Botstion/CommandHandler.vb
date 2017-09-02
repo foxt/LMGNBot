@@ -111,14 +111,19 @@ Public Class CommandHandler
     Dim thelmgn
     Dim users = New List(Of User)
     Dim allUsers = New List(Of Int64)
+#Region "Functions"
+    Async Function sendMessage(channel As IMessageChannel, text As String, Optional tts As Boolean = False, Optional embed As Embed = Nothing) As Task(Of IUserMessage)
+        Return (Await channel.SendMessageAsync(text, tts, embed))
+    End Function
+#End Region
 #Region "Message Handlers"
     Async Function hC(ByVal msg As IUserMessage) As Task Handles client.MessageReceived
-        thelmgn = (Await client.GetUser(158311402677731328).CreateDMChannelAsync)
+        thelmgn = (Await client.GetUser(158311402677731328).GetOrCreateDMChannelAsync)
         Try
             If msg.Content.StartsWith("b!") Then
                 If msg.Content.StartsWith("b!mcatlookup ") Then
 #Region "Monstercat"
-                    Dim mcatMSG = Await msg.Channel.SendMessageAsync(msg.Author.Mention, False, New EmbedBuilder With {
+                    Dim mcatMSG = Await sendMessage(msg.Channel, msg.Author.Mention, False, New EmbedBuilder With {
                                                                                               .Author = New EmbedAuthorBuilder With {
                                                                                                    .Name = "Monstercat",
                                                                                                    .Url = "http://monstercat.com",
@@ -133,7 +138,7 @@ Public Class CommandHandler
                                                                                               .Description = "Searching releases. This may take a while."})
                     Dim mcatFound = False
                     For Each result As mcatResult In JsonConvert.DeserializeObject(Of mcatResponse)(Await wc.DownloadStringTaskAsync(New Uri("https://connect.monstercat.com/api/catalog/release"))).results
-                        If result.title.Contains(msg.Content.Replace("b!mcatlookup ", "")) Then
+                        If result.title.ToLower.Contains(msg.Content.Replace("b!mcatlookup ", "").ToLower) Or result.catalogId.ToUpper = msg.Content.Replace("b!mcatlookup ", "").ToUpper Then
                             Dim mcatFields = New List(Of EmbedFieldBuilder)
                             mcatFields.Add((New EmbedFieldBuilder With {.IsInline = True, .Name = "Title", .Value = result.title}))
                             mcatFields.Add((New EmbedFieldBuilder With {.IsInline = True, .Name = "Artist", .Value = result.renderedArtists}))
@@ -141,7 +146,7 @@ Public Class CommandHandler
                             mcatFields.Add((New EmbedFieldBuilder With {.IsInline = True, .Name = "Type", .Value = result.type}))
                             Dim mcatUrls = ""
                             For Each item As String In result.urls
-                                If item.StartsWith("http://open.spotify.com") Then
+                                If item.StartsWith("http://open.spotify.com") Or item.StartsWith("https://open.spotify.com") Then
                                     mcatUrls = mcatUrls & "[Spotify](" & item & ")"
                                 ElseIf item.StartsWith("https://itunes.apple.com") Then
                                     mcatUrls = mcatUrls & "[iTunes Canada](" & item & ")"
@@ -180,62 +185,13 @@ Public Class CommandHandler
                                                                                               .Fields = mcatFields,
                                                                                               .Description = "Here is the result for your search",
                                                                                               .ImageUrl = result.coverUrl.Replace(" ", "%20").Replace(")", "%29")}).Build
+                                                          Return True
                                                       End Function)
                             mcatFound = True
                             Exit For
                         End If
                     Next
-                    If mcatFound = False Then
-                        For Each result As mcatResult In JsonConvert.DeserializeObject(Of mcatResponse)(Await wc.DownloadStringTaskAsync(New Uri("https://connect.monstercat.com/api/catalog/release"))).results
-                            If result.catalogId.Contains(msg.Content.Replace("b!mcatlookup ", "")) Then
-                                Dim mcatFields = New List(Of EmbedFieldBuilder)
-                                mcatFields.Add((New EmbedFieldBuilder With {.IsInline = True, .Name = "Title", .Value = result.title}))
-                                mcatFields.Add((New EmbedFieldBuilder With {.IsInline = True, .Name = "Artist", .Value = result.renderedArtists}))
-                                mcatFields.Add((New EmbedFieldBuilder With {.IsInline = True, .Name = "ID", .Value = result.catalogId}))
-                                mcatFields.Add((New EmbedFieldBuilder With {.IsInline = True, .Name = "Type", .Value = result.type}))
-                                Dim mcatUrls = ""
-                                For Each item As String In result.urls
-                                    If item.StartsWith("https://open.spotify.com") Then
-                                        mcatUrls = mcatUrls & "[Spotify](" & item & ")"
-                                    ElseIf item.StartsWith("https://itunes.apple.com") Then
-                                        mcatUrls = mcatUrls & "[iTunes Canada](" & item & ")"
-                                    ElseIf item.StartsWith("https://play.google.com") Then
-                                        mcatUrls = mcatUrls & "[Google Play](" & item & ")"
-                                    ElseIf item.StartsWith("http://music.monstercat.com") Then
-                                        mcatUrls = mcatUrls & "[Monstercat](" & item & ")"
-                                    ElseIf item.StartsWith("https://soundcloud.com") Then
-                                        mcatUrls = mcatUrls & "[Soundcloud](" & item & ")"
-                                    ElseIf item.StartsWith("https://www.youtube.com") Then
-                                        mcatUrls = mcatUrls & "[YouTube](" & item & ")"
-                                    ElseIf item.StartsWith("https://www.mixcloud.com") Then
-                                        mcatUrls = mcatUrls & "[Mixcloud](" & item & ")"
-                                    End If
-                                    mcatUrls = mcatUrls & vbNewLine
-                                Next
-                                mcatUrls = mcatUrls & "[HD Cover](" & (result.coverUrl.Replace(" ", "%20").Replace(")", "%29")) & ")"
-                                mcatFields.Add((New EmbedFieldBuilder With {.IsInline = False, .Name = "Links", .Value = mcatUrls}))
-                                Await mcatMSG.ModifyAsync(Function(x)
-                                                              x.Embed = (New EmbedBuilder With {
-                                                  .Author = New EmbedAuthorBuilder With {
-                                                                                                   .Name = "Monstercat",
-                                                                                                   .Url = "http://monstercat.com",
-                                                                                                   .IconUrl = "https://assets.monstercat.com/essentials/logos/monstercat_logo_square_small.png"},
-                                                                                              .Footer = New EmbedFooterBuilder With {
-                                                                                                   .IconUrl = "https://sx.thelmgn.com/2017/06/botstion.png",
-                                                                                                   .Text = "Botstion was made by theLMGN with Discord.NET"},
-                                                                                              .Url = "https://botstion.tech",
-                                                                                              .Title = "Results",
-                                                                                              .Timestamp = DateTimeOffset.UtcNow,
-                                                                                              .Color = black,
-                                                                                              .Fields = mcatFields,
-                                                                                              .Description = "Here is the result for your search",
-                                                                                              .ImageUrl = result.coverUrl.Replace(" ", "%20").Replace(")", "%29")}).Build
-                                                          End Function)
-                                mcatFound = True
-                                Exit For
-                            End If
-                        Next
-                    End If
+
                     If mcatFound = False Then
                         Await msg.ModifyAsync(Function(x)
                                                   x.Embed = (New EmbedBuilder With {
@@ -251,11 +207,12 @@ Public Class CommandHandler
                                                                                           .Timestamp = DateTimeOffset.UtcNow,
                                                                                           .Color = botstionBlue,
                                                                                           .Description = "Couldn't find any results for your search query. Track lookup soon."}).Build
+                                                  Return True
                                               End Function)
                     End If
 #End Region
                 ElseIf msg.Content.StartsWith("b!say") And msg.Author.Id = 158311402677731328 Then
-                    Await msg.Channel.SendMessageAsync("", False, New EmbedBuilder With {
+                    Await sendMessage(msg.Channel, "", False, New EmbedBuilder With {
                                                                                                .Author = New EmbedAuthorBuilder With {
                                                                                                     .Name = "Botstion",
                                                                                                     .Url = "https://botstion.tech",
@@ -274,7 +231,7 @@ Public Class CommandHandler
 
                 ElseIf msg.Content.StartsWith("b!ash ") Then
                     Dim bashfound = False
-                    Dim bashmsg = Await msg.Channel.SendMessageAsync(msg.Author.Mention, False, New EmbedBuilder With {
+                    Dim bashmsg = Await sendMessage(msg.Channel, msg.Author.Mention, False, New EmbedBuilder With {
                                                                                                .Author = New EmbedAuthorBuilder With {
                                                                                                     .Name = "bash.org QDB",
                                                                                                     .Url = "http://bash.org",
@@ -322,6 +279,7 @@ Public Class CommandHandler
                                                                                                .Timestamp = DateTimeOffset.UtcNow,
                                                                                                .Color = qdbOrange,
                                                                                                .Description = quote.text.Replace("*", "\*")}.Build
+                                                          Return True
                                                       End Function)
                         End If
                     Next
@@ -340,11 +298,11 @@ Public Class CommandHandler
                                                                                                .Timestamp = DateTimeOffset.UtcNow,
                                                                                                .Color = qdbOrange,
                                                                                                .Description = "We couldn't find that quote."}.Build
+                                                      Return True
                                                   End Function)
                     End If
                 ElseIf msg.Content.StartsWith("b!quote ") Then
-                    Dim quoteMsg = client.Get
-                    Await msg.Channel.SendMessageAsync(msg.Author.Mention, False, New EmbedBuilder With {
+                    Await sendMessage(msg.Channel, msg.Author.Mention, False, New EmbedBuilder With {
                         .Author = New EmbedAuthorBuilder With {
                             .Name = "bash.org QDB",
                             .Url = "http://bash.org",
@@ -363,7 +321,7 @@ Public Class CommandHandler
                     If msg.Content.StartsWith("b!ow pc quickplay ") Then
                         Dim owRawData = Await wc.DownloadStringTaskAsync(New Uri("http://owapi.net/api/v3/u/" & msg.Content.Replace("b!ow pc quickplay ", "") & "/blob"))
                         If owRawData.Contains("""error"": 404") Then
-                            Await msg.Channel.SendMessageAsync(msg.Author.Mention, False, New EmbedBuilder With {
+                            Await sendMessage(msg.Channel, msg.Author.Mention, False, New EmbedBuilder With {
                                                                                               .Author = New EmbedAuthorBuilder With {
                                                                                                    .Name = "Overwatch",
                                                                                                    .Url = "http://owapi.net",
@@ -391,7 +349,7 @@ Public Class CommandHandler
                     ElseIf msg.Content.StartsWith("b!ow xbox competitive") Then
 
                     Else
-                        Await msg.Channel.SendMessageAsync(msg.Author.Mention, False, New EmbedBuilder With {
+                        Await sendMessage(msg.Channel, msg.Author.Mention, False, New EmbedBuilder With {
                                                                                           .Author = New EmbedAuthorBuilder With {
                                                                                                .Name = "Overwatch",
                                                                                                .Url = "http://owapi.net",
@@ -407,7 +365,7 @@ Public Class CommandHandler
                     End If
 #End Region
                 ElseIf msg.Content.StartsWith("b!helpdesk") Then
-                    Await (Await client.GetUser(158311402677731328).CreateDMChannelAsync).SendMessageAsync(msg.Author.Mention, False, New EmbedBuilder With {
+                    Await sendMessage((client.GetChannel(351080198596329483)), msg.Author.Mention, False, New EmbedBuilder With {
                                                                                                .Author = New EmbedAuthorBuilder With {
                                                                                                     .Name = msg.Author.Username & "#" & msg.Author.Discriminator,
                                                                                                     .Url = (Await TryCast(msg.Channel, IGuildChannel).CreateInviteAsync(1800, 1, True)).Url,
@@ -420,7 +378,7 @@ Public Class CommandHandler
                                                                                                .Timestamp = DateTimeOffset.UtcNow,
                                                                                                .Color = botstionBlue,
                                                                                                .Description = msg.Content})
-                    Await msg.Channel.SendMessageAsync(msg.Author.Mention, False, New EmbedBuilder With {
+                    Await sendMessage(msg.Channel, msg.Author.Mention, False, New EmbedBuilder With {
                                                                                                .Author = New EmbedAuthorBuilder With {
                                                                                                     .Name = "Help Desk",
                                                                                                     .Url = "https://botstion.tech"},
@@ -433,7 +391,7 @@ Public Class CommandHandler
                                                                                                .Color = botstionBlue,
                                                                                                .Description = ":white_check_mark: A message has been sent to the help desk team along with an instant invite to your channel."})
                 Else
-                    Await msg.Channel.SendMessageAsync(msg.Author.Mention, False, New EmbedBuilder With {
+                    Await sendMessage(msg.Channel, msg.Author.Mention, False, New EmbedBuilder With {
                                                                                                .Author = New EmbedAuthorBuilder With {
                                                                                                     .Name = "Command Handler",
                                                                                                     .Url = "https://botstion.tech"},
@@ -445,8 +403,6 @@ Public Class CommandHandler
                                                                                                .Timestamp = DateTimeOffset.UtcNow,
                                                                                                .Color = botstionBlue,
                                                                                                .Description = "`" & msg.Content & "`is not a command. Try b!help for a list of 'em!"})
-
-
                 End If
             End If
             If msg.Content = "AAxx" And False Then
@@ -458,7 +414,7 @@ Public Class CommandHandler
                 thingies.Add((New EmbedFieldBuilder With {.IsInline = True, .Name = "Framework", .Value = "Discord.NET"}))
                 thingies.Add((New EmbedFieldBuilder With {.IsInline = True, .Name = "Website", .Value = "https://botstion.tech"}))
                 thingies.Add((New EmbedFieldBuilder With {.IsInline = True, .Name = "Uptime", .Value = ""}))
-                Await msg.Channel.SendMessageAsync("", False, New EmbedBuilder With {
+                Await sendMessage(msg.Channel, "", False, New EmbedBuilder With {
                                                                                                    .Author = New EmbedAuthorBuilder With {
                                                                                                         .Name = "theLMGN#4036",
                                                                                                         .Url = "https://thelmgn.com",
@@ -473,7 +429,7 @@ Public Class CommandHandler
                                                                                                    })
             End If
         Catch ex As Exception
-            msg.Channel.SendMessageAsync(msg.Author.Mention, False, New EmbedBuilder With {
+            sendMessage(msg.Channel, msg.Author.Mention, False, New EmbedBuilder With {
                                                                                                .Author = New EmbedAuthorBuilder With {
                                                                                                     .Name = "Error Handler",
                                                                                                     .Url = "https://botstion.tech"},
@@ -485,7 +441,7 @@ Public Class CommandHandler
                                                                                                .Timestamp = DateTimeOffset.UtcNow,
                                                                                                .Color = botstionBlue,
                                                                                                .Description = "A " & ex.Message & " error happened whilst running that command. The full technical details has been sent to theLMGN."})
-            thelmgn.SendMessageAsync(msg.Author.Mention, False, New EmbedBuilder With {
+            sendMessage(thelmgn, msg.Author.Mention, False, New EmbedBuilder With {
                                                                                                .Author = New EmbedAuthorBuilder With {
                                                                                                     .Name = msg.Author.Username & "#" & msg.Author.Discriminator,
                                                                                                     .Url = "https://botstion.tech",
@@ -503,7 +459,7 @@ Public Class CommandHandler
 #End Region
 #Region "Handlers"
     Async Function newServer(ByVal guild As SocketGuild) As Task Handles client.JoinedGuild
-        Await TryCast(client.GetChannel(290522781354033154), IMessageChannel).SendMessageAsync("<@158311402677731328>", False, New EmbedBuilder With {
+        Await TryCast(client.GetChannel(322480171745673218), IMessageChannel).SendMessageAsync("<@158311402677731328>", False, New EmbedBuilder With {
                                                                                                .Author = New EmbedAuthorBuilder With {
                                                                                                     .IconUrl = guild.IconUrl,
                                                                                                     .Name = guild.Name,
@@ -533,7 +489,7 @@ Public Class CommandHandler
                 .Color = botstionBlue,
                 .Description = "I've reached my guild limit of 90. I'm leaving here."})
             Await guild.LeaveAsync
-            Await TryCast(client.GetChannel(295552185826279424), IMessageChannel).SendMessageAsync("<@158311402677731328>", False, New EmbedBuilder With {
+            Await TryCast(client.GetChannel(322480171745673218), IMessageChannel).SendMessageAsync("<@158311402677731328>", False, New EmbedBuilder With {
                 .Author = New EmbedAuthorBuilder With {
                     .IconUrl = guild.IconUrl,
                     .Name = guild.Name,
@@ -567,7 +523,7 @@ Public Class CommandHandler
     End Function
 
     Async Function leftServer(ByVal guild As SocketGuild) As Task Handles client.LeftGuild
-        Await TryCast(client.GetChannel(290522781354033154), IMessageChannel).SendMessageAsync("<@158311402677731328>", False, New EmbedBuilder With {
+        Await TryCast(client.GetChannel(322480171745673218), IMessageChannel).SendMessageAsync("<@158311402677731328>", False, New EmbedBuilder With {
                                                                                                .Author = New EmbedAuthorBuilder With {
                                                                                                     .IconUrl = guild.IconUrl,
                                                                                                     .Name = guild.Name,

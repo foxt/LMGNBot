@@ -28,6 +28,7 @@ Module Module1
         Console.WriteLine()
         Console.BackgroundColor = ConsoleColor.Black
         Console.ForegroundColor = ConsoleColor.Gray
+        Return True
     End Function
 
     Sub Main()
